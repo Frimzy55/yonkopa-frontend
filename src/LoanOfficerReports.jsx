@@ -1,23 +1,42 @@
 const LoanOfficerReports = () => {
+  const handleDisbursedReports = () => {
+    alert("Disbursed loan reports clicked");
+    // TODO: Navigate or fetch disbursed loan reports
+  };
+
+  const handleRejectedReports = () => {
+    alert("Rejected loan reports clicked");
+    // TODO: Navigate or fetch rejected loan reports
+  };
+
   return (
     <div className="content-section">
       <h2>Reports & Analytics</h2>
 
-      <div className="feature-grid">
-        <div className="feature-card">
-          <h3>Performance Reports</h3>
-          <p>Portfolio performance metrics</p>
-        </div>
+      <div
+        className="report-buttons"
+        style={{
+          display: 'flex',
+          gap: '1rem',
+          marginTop: '1rem',
+          flexWrap: 'wrap',
+        }}
+      >
+        <button
+          className="btn btn-primary"
+          style={{ flex: '1 1 45%', padding: '1rem', fontSize: '1rem' }}
+          onClick={handleDisbursedReports}
+        >
+          Disbursed Loan Reports
+        </button>
 
-        <div className="feature-card">
-          <h3>Risk Analysis</h3>
-          <p>Credit risk assessment</p>
-        </div>
-
-        <div className="feature-card">
-          <h3>Operational Reports</h3>
-          <p>Daily workflow reports</p>
-        </div>
+        <button
+          className="btn btn-danger"
+          style={{ flex: '1 1 45%', padding: '1rem', fontSize: '1rem' }}
+          onClick={handleRejectedReports}
+        >
+          Rejected Loan Reports
+        </button>
       </div>
     </div>
   );

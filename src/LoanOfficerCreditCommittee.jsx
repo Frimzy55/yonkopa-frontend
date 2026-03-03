@@ -1,23 +1,34 @@
 const LoanOfficerCreditCommittee = () => {
+  const handlePendingApprovals = () => {
+    alert("Pending approvals clicked");
+    // TODO: Navigate or fetch pending approvals
+  };
+
+  const handleApproveFiles = () => {
+    alert("Approve files clicked");
+    // TODO: Navigate or open approve files page
+  };
+
   return (
     <div className="content-section">
       <h2>Credit Committee</h2>
 
-      <div className="feature-grid">
-        <div className="feature-card">
-          <h3>Committee Meetings</h3>
-          <p>Schedule and manage meetings</p>
-        </div>
+      <div className="feature-grid" style={{ display: 'flex', gap: '1rem' }}>
+        <button
+          className="btn btn-primary"
+          style={{ flex: 1, padding: '1rem', fontSize: '1rem' }}
+          onClick={handlePendingApprovals}
+        >
+          Pending Approvals
+        </button>
 
-        <div className="feature-card">
-          <h3>Case Reviews</h3>
-          <p>Present and review loan cases</p>
-        </div>
-
-        <div className="feature-card">
-          <h3>Decision Tracking</h3>
-          <p>Track decisions and approvals</p>
-        </div>
+        <button
+          className="btn btn-primary"
+          style={{ flex: 1, padding: '1rem', fontSize: '1rem' }}
+          onClick={handleApproveFiles}
+        >
+          Approve Files
+        </button>
       </div>
     </div>
   );

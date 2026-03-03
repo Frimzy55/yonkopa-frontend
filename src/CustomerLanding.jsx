@@ -91,7 +91,7 @@ const CustomerLanding = () => {
       {/* FOOTER */}
       <footer className="mt-auto py-4 bg-dark text-white text-center">
         <div className="container">
-          <p className="mb-1">&copy; 2024 Yonkopa. All rights reserved.</p>
+          <p className="mb-1">&copy; 2026 Yonkopa. All rights reserved.</p>
           <p className="mb-0">support@loanexpress.com | 1-800-LOAN-NOW</p>
         </div>
       </footer>

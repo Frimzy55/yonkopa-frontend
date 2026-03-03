@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import LoanForm from "./CutomerLoanForm"; // ⬅ IMPORTED HERE
+import LoanForm from "./CutomerLoanForm"; // ⬅ KEEP YOUR IMPORT
 
 const CustomerApplyLoan = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +10,9 @@ const CustomerApplyLoan = () => {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState("verify");
+
+  // ✅ NEW: store verified customer
+  const [verifiedCustomer, setVerifiedCustomer] = useState(null);
 
   const statusMessages = {
     verified: {
@@ -52,7 +55,13 @@ const CustomerApplyLoan = () => {
       if (!response.ok) throw new Error("Server error");
 
       const data = await response.json();
-      setStatus(data.verified ? "verified" : "not-found");
+
+      if (data.verified) {
+        setVerifiedCustomer(data.customer); // ✅ SAVE CUSTOMER DATA
+        setStatus("verified");
+      } else {
+        setStatus("not-found");
+      }
 
     } catch (err) {
       setStatus("error");
@@ -67,6 +76,7 @@ const CustomerApplyLoan = () => {
     setFormData({ phone: "", kycCode: "" });
     setStatus("");
     setStep("verify");
+    setVerifiedCustomer(null); // ✅ CLEAR CUSTOMER
   };
 
   const currentStatus = statusMessages[status];
@@ -84,12 +94,10 @@ const CustomerApplyLoan = () => {
       {step === "verify" && status !== "verified" && (
         <form onSubmit={handleSubmit} className="loan-form">
           <div className="form-group">
-            <label htmlFor="phone" className="form-label">Phone Number</label>
+            <label className="form-label">Phone Number</label>
             <input
-              id="phone"
               name="phone"
               type="tel"
-              placeholder="Enter phone number"
               value={formData.phone}
               onChange={handleInputChange}
               required
@@ -99,12 +107,10 @@ const CustomerApplyLoan = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="kycCode" className="form-label">KYC Code</label>
+            <label className="form-label">KYC Code</label>
             <input
-              id="kycCode"
               name="kycCode"
               type="text"
-              placeholder="Enter KYC code"
               value={formData.kycCode}
               onChange={handleInputChange}
               required
@@ -113,7 +119,7 @@ const CustomerApplyLoan = () => {
             />
           </div>
 
-          <button type="submit" className={`submit-btn ${loading ? "loading" : ""}`}>
+          <button type="submit" className="submit-btn">
             {loading ? "Verifying..." : "Verify Details"}
           </button>
         </form>
@@ -137,18 +143,17 @@ const CustomerApplyLoan = () => {
         </div>
       )}
 
-      {/* ERROR MESSAGES */}
+      {/* ERROR MESSAGE */}
       {status && status !== "verified" && step === "verify" && currentStatus && (
-        <div
-          className={`status-message status-${currentStatus.type}`}
-          style={{ color: currentStatus.color, marginTop: "20px" }}
-        >
+        <div style={{ color: currentStatus.color, marginTop: "20px" }}>
           {currentStatus.message}
         </div>
       )}
 
-      {/* SHOW LOAN FORM PAGE */}
-      {step === "loan-form" && <LoanForm handleReset={handleReset} />}
+      {/* LOAN FORM WITH AUTOFILL */}
+      {step === "loan-form" && (
+        <LoanForm user={verifiedCustomer} handleReset={handleReset} />
+      )}
     </div>
   );
 };

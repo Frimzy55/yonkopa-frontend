@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import ApplicantProfile from './GApplicantProfile';
+import CollateralDetailsWindow from './GCollateralDetailsWindow';
+import AssessmentWindow from './GAssessmentWindow';
+import GComments from './GComments';
 
-const CreditAssessmentTable = ({ onAssess }) => {
+const STEPS = [
+  'Select Application',
+  'Applicant Profile',
+  'Collateral Details',
+  'Borrower Credit',
+  'Comments'
+];
+
+const CreditAssessmentWizard = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedAppIndex, setSelectedAppIndex] = useState(null);
+  const [currentStep, setCurrentStep] = useState(0);
 
   useEffect(() => {
     fetchApplications();
@@ -13,33 +27,48 @@ const CreditAssessmentTable = ({ onAssess }) => {
       const response = await fetch(
         'http://localhost:5000/api/loan-applications/pending'
       );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch applications');
-      }
+      if (!response.ok) throw new Error('Failed to fetch');
 
       const data = await response.json();
 
+      // Transform data and format application date
       const transformedData = data.map(app => ({
         id: app.id,
+        customerId:app.kycCode,
         applicantName: app.fullName || 'N/A',
+        contactNumber: app.phone || 'N/A',
+        creditOfficer: app.creditOfficer || 'N/A',
         loanType: app.loanType || 'other',
         loanAmount: app.loanAmount || 0,
-        applicationDate: app.created_at || new Date().toISOString(),
+        applicationDate: app.createdAt
+          ? new Date(app.createdAt).toLocaleString('en-GB', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+            })
+          : 'N/A',
         creditScore: app.creditScore ?? 0,
         status: app.status || 'pending',
-        open: false // for React-controlled dropdown
+        open: false
       }));
 
       setApplications(transformedData);
-    } catch (error) {
-      console.error('Error fetching applications:', error);
+    } catch (err) {
+      console.error(err);
       setApplications([]);
     } finally {
       setLoading(false);
     }
   };
 
+  /* ================= WIZARD CONTROLS ================= */
+  const nextStep = () => setCurrentStep(prev => prev + 1);
+  const prevStep = () => setCurrentStep(prev => prev - 1);
+
+  /* ================= ACTION HANDLERS ================= */
   const toggleDropdown = (id) => {
     setApplications(prev =>
       prev.map(app =>
@@ -50,154 +79,184 @@ const CreditAssessmentTable = ({ onAssess }) => {
     );
   };
 
+  const handleProceed = (index) => {
+    setSelectedAppIndex(index);
+    setCurrentStep(1);
+  };
+
+  const handleSkip = (index) => {
+    alert(`Assessment skipped for application #${applications[index].id}`);
+  };
+
+  const handleReprocess = (index) => {
+    alert(`Reprocess requested for application #${applications[index].id}`);
+  };
+
+  /* ================= LOADING ================= */
   if (loading) {
     return (
       <div className="text-center py-4">
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (applications.length === 0) {
-    return (
-      <div className="text-center py-4">
-        <i
-          className="bi bi-check-circle text-success"
-          style={{ fontSize: '3rem' }}
-        ></i>
-        <p className="mt-3 text-muted">
-          No applications pending assessment
-        </p>
+        <div className="spinner-border" />
       </div>
     );
   }
 
   return (
-    <div>
-      <table className="table table-hover align-middle">
-        <thead className="table-light">
-          <tr>
-            <th>Application ID</th>
-            <th>Applicant Name</th>
-            <th>Loan Type</th>
-            <th>Loan Amount</th>
-            <th>Application Date</th>
-            <th>Credit Score</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
+    <div className="container">
 
-        <tbody>
-          {applications.map(app => (
-            <tr key={app.id}>
-              <td>#{app.id}</td>
-              <td>{app.applicantName}</td>
+      {/* ================= HEADER ================= */}
+      <div className="bg-white py-2">
+        <h3 className="mb-1">Personal Loan Credit Assessment</h3>
+        <h6 className="text-muted mb-3">Applications Pending Assessment</h6>
 
-              <td>
-                <span
-                  className={`badge ${
-                    app.loanType === 'personal'
-                      ? 'bg-primary'
-                      : app.loanType === 'business'
-                      ? 'bg-success'
-                      : 'bg-info'
-                  }`}
-                >
-                  {app.loanType}
-                </span>
-              </td>
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <strong>Step {currentStep + 1} of {STEPS.length}</strong>
+          <span>{STEPS[currentStep]}</span>
+        </div>
 
-              <td>₵{Number(app.loanAmount).toLocaleString()}</td>
-
-              <td>
-                {new Date(app.applicationDate).toLocaleDateString()}
-              </td>
-
-              <td>
-                <span
-                  className={`badge ${
-                    app.creditScore >= 700
-                      ? 'bg-success'
-                      : app.creditScore >= 600
-                      ? 'bg-warning text-dark'
-                      : 'bg-danger'
-                  }`}
-                >
-                  {app.creditScore || 'N/A'}
-                </span>
-              </td>
-
-              <td>
-                <span
-                  className={`badge ${
-                    app.status === 'pending'
-                      ? 'bg-warning text-dark'
-                      : app.status === 'approved'
-                      ? 'bg-success'
-                      : app.status === 'skipped'
-                      ? 'bg-secondary'
-                      : 'bg-danger'
-                  }`}
-                >
-                  {app.status}
-                </span>
-              </td>
-
-              {/* ACTIONS - React-controlled dropdown */}
-              <td style={{ position: 'relative', minWidth: '150px' }}>
-                <button
-                  className="btn btn-sm btn-outline-primary"
-                  onClick={() => toggleDropdown(app.id)}
-                >
-                  Actions
-                </button>
-
-                {app.open && (
-                  <div
-                    className="dropdown-menu show"
-                    style={{
-                      position: 'absolute',
-                      zIndex: 1000,
-                      display: 'block'
-                    }}
-                  >
-                    <button
-                      className="dropdown-item text-success"
-                      onClick={() => onAssess(app, 'proceed')}
-                    >
-                      <i className="bi bi-play-circle me-2"></i>
-                      Proceed
-                    </button>
-
-                    <button
-                      className="dropdown-item text-warning"
-                      onClick={() => onAssess(app, 'skip')}
-                    >
-                      <i className="bi bi-skip-forward me-2"></i>
-                      Skip Assessment
-                    </button>
-
-                    <div className="dropdown-divider"></div>
-
-                    <button
-                      className="dropdown-item text-danger"
-                      onClick={() => onAssess(app, 'reprocess')}
-                    >
-                      <i className="bi bi-arrow-repeat me-2"></i>
-                      Reprocess
-                    </button>
-                  </div>
-                )}
-              </td>
-            </tr>
+        <ul className="nav nav-pills justify-content-between mb-2">
+          {STEPS.map((step, index) => (
+            <li className="nav-item flex-fill text-center" key={index}>
+              <span
+                className={`nav-link ${index === currentStep ? 'active' : 'disabled'}`}
+              >
+                {step}
+              </span>
+            </li>
           ))}
-        </tbody>
-      </table>
+        </ul>
+
+        <hr className="my-2" />
+      </div>
+
+      {/* ================= STEP 1: TABLE ================= */}
+      {currentStep === 0 && (
+        <>
+          {applications.length === 0 ? (
+            <div className="text-center py-4 text-muted">
+              No applications pending assessment
+            </div>
+          ) : (
+            <div>
+              <table className="table table-hover align-middle">
+                <thead className="table-light">
+                  <tr>
+                    <th>ID</th>
+                     <th>Customer Id</th>
+                    <th>Applicant Name</th>
+                    <th>Phone</th>
+                    <th>Credit Officer</th>
+                    <th>Loan Amount</th>
+                    <th>Status</th>
+                    <th>Application Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {applications.map((app, index) => (
+                    <tr key={app.id}>
+                      <td>#{app.id}</td>
+                       <td>{app.customerId}</td>
+                      <td>{app.applicantName}</td>
+                      <td>{app.contactNumber}</td>
+                      <td>{app.creditOfficer}</td>
+                      <td>₵{Number(app.loanAmount).toLocaleString()}</td>
+                      <td>{app.status}</td>
+                      <td>{app.applicationDate}</td>
+
+                      {/* ===== ACTIONS DROPDOWN ===== */}
+                      <td>
+                        <div className="dropdown">
+                          <button
+                            className="btn btn-sm btn-outline-primary dropdown-toggle"
+                            onClick={() => toggleDropdown(app.id)}
+                          >
+                            Actions
+                          </button>
+
+                          {app.open && (
+                            <div
+                              className="dropdown-menu show"
+                              style={{ zIndex: 2000 }}
+                            >
+                              <button
+                                className="dropdown-item"
+                                onClick={() => handleProceed(index)}
+                              >
+                                Proceed
+                              </button>
+
+                              <button
+                                className="dropdown-item"
+                                onClick={() => handleSkip(index)}
+                              >
+                                Skip Assessment
+                              </button>
+
+                              <div className="dropdown-divider"></div>
+
+                              <button
+                                className="dropdown-item"
+                                onClick={() => handleReprocess(index)}
+                              >
+                                Reprocess
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ================= STEP 2 ================= */}
+      {currentStep === 1 && selectedAppIndex !== null && (
+        <ApplicantProfile
+          application={applications[selectedAppIndex]}
+          onBack={prevStep}
+          onNext={nextStep}
+        />
+      )}
+
+      {/* ================= STEP 3 ================= */}
+      {currentStep === 2 && selectedAppIndex !== null && (
+        <CollateralDetailsWindow
+          application={applications[selectedAppIndex]}
+          onBack={prevStep}
+          onNext={nextStep}
+        />
+      )}
+
+      {/* ================= STEP 4 ================= */}
+      {currentStep === 3 && selectedAppIndex !== null && (
+        <AssessmentWindow
+          application={applications[selectedAppIndex]}
+          onBack={prevStep}
+          onNext={nextStep}   
+        />
+      )}
+
+      {/* ================= STEP 5 ================= */}
+      {currentStep === 4 && selectedAppIndex !== null && (
+        <GComments
+          application={applications[selectedAppIndex]}
+          onBack={prevStep}
+          onSubmit={() => {
+            alert("Assessment submitted successfully!");
+            setCurrentStep(0);
+            setSelectedAppIndex(null);
+          }}
+        />
+      )}
+
     </div>
   );
 };
 
-export default CreditAssessmentTable;
+export default CreditAssessmentWizard;

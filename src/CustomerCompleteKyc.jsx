@@ -1,26 +1,61 @@
 // src/pages/CustomerDashboard/KYCVerification.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CustomerCompleteKyc.css'; // CSS for form + progress bar
 
 const CustomerCompleteKyc = ({ user }) => {
   const [currentStep, setCurrentStep] = useState(1);
+
+  // Autofill names and email from user
   const [formData, setFormData] = useState({
-    // Personal Info
-    firstName: '', middleName: '', lastName: '', dateOfBirth: '', gender: '',
-    nationality: '', maritalStatus: '', nationalId: '', passportNumber: '', taxId: '',
-    // Contact Info
-    mobileNumber: '', email: '', residentialAddress: '', city: '', state: '',
-    zipCode: '', postalAddress: '',
-    // Employment/Income
-    employmentStatus: '', employerName: '', jobTitle: '', monthlyIncome: '',
-    businessType: '', yearsInCurrentEmployment: '',
-    // Bank Details
-    bankName: '', bankAccountNumber: '', accountType: '', branch: '',
-    // Loan Info
-    loanPurpose: '', existingLoans: '',
-    // Documents
-    idDocument: null, addressProof: null, incomeProof: null
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    dateOfBirth: '',
+    gender: '',
+    nationality: '',
+    maritalStatus: '',
+    nationalId: '',
+    passportNumber: '',
+    taxId: '',
+    mobileNumber: '',
+    email: '',
+    residentialAddress: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    postalAddress: '',
+    employmentStatus: '',
+    employerName: '',
+    jobTitle: '',
+    monthlyIncome: '',
+    businessType: '',
+    yearsInCurrentEmployment: '',
+    bankName: '',
+    bankAccountNumber: '',
+    accountType: '',
+    branch: '',
+    loanPurpose: '',
+    existingLoans: '',
+    idDocument: null,
+    addressProof: null,
+    incomeProof: null
   });
+
+  useEffect(() => {
+  if (!user) return;
+
+  const fullname = user.fullname || user.fullName || ''; // handle different naming
+  const nameParts = fullname.trim().split(' ');
+
+  setFormData(prev => ({
+    ...prev,
+    firstName: nameParts[0] || '',
+    middleName: nameParts.length === 3 ? nameParts[1] : '',
+    lastName: nameParts.length >= 2 ? nameParts[nameParts.length - 1] : '',
+    email: user.email || ''
+  }));
+}, [user]);
+
 
   const steps = [
     { number: 1, title: 'Personal Info', description: 'Basic personal details' },
@@ -43,33 +78,32 @@ const CustomerCompleteKyc = ({ user }) => {
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const formToSend = new FormData();
-  for (const key in formData) {
-    formToSend.append(key, formData[key]);
-  }
-
-  try {
-    const res = await fetch("http://localhost:5000/api/kyc/submit", {
-      method: "POST",
-      body: formToSend,
-    });
-
-    const data = await res.json();
-    console.log(data);
-
-    if (res.ok) {
-      alert("KYC submitted successfully!");
-    } else {
-      alert("Error submitting KYC");
+    const formToSend = new FormData();
+    for (const key in formData) {
+      formToSend.append(key, formData[key]);
     }
 
-  } catch (error) {
-    console.error("Submit error:", error);
-  }
-};
+    try {
+      const res = await fetch("http://localhost:5000/api/kyc/submit", {
+        method: "POST",
+        body: formToSend,
+      });
 
+      const data = await res.json();
+      console.log(data);
+
+      if (res.ok) {
+        alert("KYC submitted successfully!");
+      } else {
+        alert("Error submitting KYC");
+      }
+
+    } catch (error) {
+      console.error("Submit error:", error);
+    }
+  };
 
   const renderStep = () => {
     switch (currentStep) {
@@ -77,19 +111,23 @@ const CustomerCompleteKyc = ({ user }) => {
         <div className="form-step">
           <h3>Personal Information</h3>
           <div className="form-grid">
-            <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="First Name *" required />
-            <input type="text" name="middleName" value={formData.middleName} onChange={handleInputChange} placeholder="Middle Name" />
-            <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Last Name *" required />
+            <input type="text" name="firstName" value={formData.firstName} readOnly placeholder="First Name *" required />
+            <input type="text" name="middleName" value={formData.middleName} readOnly placeholder="Middle Name" />
+            <input type="text" name="lastName" value={formData.lastName} readOnly placeholder="Last Name *" required />
             <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleInputChange} required />
             <select name="gender" value={formData.gender} onChange={handleInputChange} required>
               <option value="">Select Gender</option>
-              <option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
             </select>
             <input type="text" name="nationality" value={formData.nationality} onChange={handleInputChange} placeholder="Nationality *" required />
             <select name="maritalStatus" value={formData.maritalStatus} onChange={handleInputChange}>
               <option value="">Marital Status</option>
-              <option value="single">Single</option><option value="married">Married</option>
-              <option value="divorced">Divorced</option><option value="widowed">Widowed</option>
+              <option value="single">Single</option>
+              <option value="married">Married</option>
+              <option value="divorced">Divorced</option>
+              <option value="widowed">Widowed</option>
             </select>
             <input type="text" name="nationalId" value={formData.nationalId} onChange={handleInputChange} placeholder="National ID *" required />
             <input type="text" name="passportNumber" value={formData.passportNumber} onChange={handleInputChange} placeholder="Passport Number" />
@@ -102,7 +140,7 @@ const CustomerCompleteKyc = ({ user }) => {
           <h3>Contact Information</h3>
           <div className="form-grid">
             <input type="tel" name="mobileNumber" value={formData.mobileNumber} onChange={handleInputChange} placeholder="Mobile Number *" required />
-            <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="Email Address *" required />
+            <input type="email" name="email" value={formData.email} readOnly placeholder="Email Address *" required />
             <input type="text" name="residentialAddress" value={formData.residentialAddress} onChange={handleInputChange} placeholder="Residential Address *" required />
             <input type="text" name="city" value={formData.city} onChange={handleInputChange} placeholder="City *" required />
             <input type="text" name="state" value={formData.state} onChange={handleInputChange} placeholder="State/Province *" required />
@@ -117,8 +155,10 @@ const CustomerCompleteKyc = ({ user }) => {
           <div className="form-grid">
             <select name="employmentStatus" value={formData.employmentStatus} onChange={handleInputChange} required>
               <option value="">Employment Status</option>
-              <option value="employed">Employed</option><option value="self-employed">Self-employed</option>
-              <option value="unemployed">Unemployed</option><option value="student">Student</option>
+              <option value="employed">Employed</option>
+              <option value="self-employed">Self-employed</option>
+              <option value="unemployed">Unemployed</option>
+              <option value="student">Student</option>
             </select>
             <input type="text" name="employerName" value={formData.employerName} onChange={handleInputChange} placeholder="Employer Name" />
             <input type="text" name="jobTitle" value={formData.jobTitle} onChange={handleInputChange} placeholder="Job Title/Position" />
@@ -136,7 +176,8 @@ const CustomerCompleteKyc = ({ user }) => {
             <input type="text" name="bankAccountNumber" value={formData.bankAccountNumber} onChange={handleInputChange} placeholder="Bank Account Number *" required />
             <select name="accountType" value={formData.accountType} onChange={handleInputChange} required>
               <option value="">Account Type *</option>
-              <option value="savings">Savings</option><option value="current">Current/Checking</option>
+              <option value="savings">Savings</option>
+              <option value="current">Current/Checking</option>
             </select>
             <input type="text" name="branch" value={formData.branch} onChange={handleInputChange} placeholder="Branch" />
           </div>

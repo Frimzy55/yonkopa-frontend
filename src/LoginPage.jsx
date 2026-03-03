@@ -164,7 +164,7 @@ const LoginPage = ({ onClose }) => {
               <input className="form-check-input" type="checkbox" disabled={isSubmitting} />
               <label className="form-check-label">Remember me</label>
             </div>
-            <a href="#" className="text-decoration-none">Forgot password?</a>
+            <a href="/forgot-password" className="text-decoration-none">Forgot password?</a>
           </div>
 
           {/* Login Button */}

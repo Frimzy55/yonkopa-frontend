@@ -1,4 +1,4 @@
-import React, { useState,useEffect} from 'react';
+import React, { useState,useEffect,useCallback,} from 'react';
 import { FaRegCreditCard } from 'react-icons/fa'; // Credit card icon
 //import { calculateCostOfGoodsSold } from "./calculations"; 
 //import { calculateCostOfGoodsSold, calculateGrossProfit, calculateTotalOperatingExpenses, } from './calculations';
@@ -65,45 +65,56 @@ const CreditWorthDetail = ({  onBack, onNext, hasNext }) => {
   
    
   
-  const recalculateResults = () => {
-    const salesRevenue = parseFloat(monthlySalesRevenue) || 0;
-    const grossMarginPercentage = parseFloat(grossMarginInput) || 0;
+  //import { useCallback, useEffect } from "react";
 
-    // Calculate COGS
-    const cogs = calculateCostOfGoodsSold(salesRevenue, grossMarginPercentage);
-    setCostOfGoodsSold(cogs);
+// Wrap recalculateResults in useCallback
+const recalculateResults = useCallback(() => {
+  const salesRevenue = parseFloat(monthlySalesRevenue) || 0;
+  const grossMarginPercentage = parseFloat(grossMarginInput) || 0;
 
-    // Calculate Gross Profit
-    const grossProfitVal = calculateGrossProfit(salesRevenue, cogs);
-    setGrossProfit(grossProfitVal);
+  // Calculate COGS
+  const cogs = calculateCostOfGoodsSold(salesRevenue, grossMarginPercentage);
+  setCostOfGoodsSold(cogs);
 
-    // Calculate Total Operating Expenses
-    const totalExpenses = calculateTotalOperatingExpenses(salesRevenue, cogs, grossProfitVal, grossMarginPercentage);
-    setTotalOperatingExpenses(totalExpenses);
+  // Calculate Gross Profit
+  const grossProfitVal = calculateGrossProfit(salesRevenue, cogs);
+  setGrossProfit(grossProfitVal);
 
-    // Calculate Net Business Profit
-    const netProfit = calculateNetBusinessProfit(grossProfitVal, totalExpenses);
-    setNetBusinessProfit(netProfit);
+  // Calculate Total Operating Expenses
+  const totalExpenses = calculateTotalOperatingExpenses(
+    salesRevenue,
+    cogs,
+    grossProfitVal,
+    grossMarginPercentage
+  );
+  setTotalOperatingExpenses(totalExpenses);
 
-    // Calculate Household Surplus
-    const otherIncome = parseFloat(otherIncomeInput) || 0;
-    const householdExpenses = parseFloat(householdExpensesInput) || 0;
-    const surplus = calculateHouseholdSurplus(netProfit, otherIncome, householdExpenses);
-    setHouseholdSurplus(surplus);
+  // Calculate Net Business Profit
+  const netProfit = calculateNetBusinessProfit(grossProfitVal, totalExpenses);
+  setNetBusinessProfit(netProfit);
 
-    // Calculate loan recommendation (60% of household surplus)
-    const loanRec = surplus * 0.6;
-    setLoanRecommendation(loanRec);
-  };
+  // Calculate Household Surplus
+  const otherIncome = parseFloat(otherIncomeInput) || 0;
+  const householdExpenses = parseFloat(householdExpensesInput) || 0;
+  const surplus = calculateHouseholdSurplus(netProfit, otherIncome, householdExpenses);
+  setHouseholdSurplus(surplus);
 
-  // Trigger recalculation when any of the relevant fields change
-  useEffect(() => {
-    recalculateResults();
-  }, [monthlySalesRevenue, grossMarginInput, otherIncomeInput, householdExpensesInput]);
+  // Calculate loan recommendation (60% of household surplus)
+  const loanRec = surplus * 0.6;
+  setLoanRecommendation(loanRec);
+}, [monthlySalesRevenue, grossMarginInput, otherIncomeInput, householdExpensesInput]); // ✅ dependencies
 
+// Trigger recalculation when relevant fields change
+useEffect(() => {
+  recalculateResults();
+}, [recalculateResults]); // ✅ now ESLint is happy
 
- 
-  
+// Optional: handle Enter key press
+//const handleKeyPress = (e) => {
+  //if (e.key === "Enter") {
+    //recalculateResults();
+ // }
+//};
 
   
 
@@ -116,11 +127,11 @@ const CreditWorthDetail = ({  onBack, onNext, hasNext }) => {
       );
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleDisplayResult(); // Trigger result display on Enter
-    }
-  };
+  //const handleKeyPress = (e) => {
+    //if (e.key === "Enter") {
+      //handleDisplayResult(); // Trigger result display on Enter
+   // }
+  //};
 
 
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import CreditAssessmentTable from './GCreditAssessmentTable';
 import AssessmentForm from './AssessmentForm';
 
@@ -7,11 +7,7 @@ const CreditAssessment = ({ assessmentType, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [selectedApplication, setSelectedApplication] = useState(null);
 
-  useEffect(() => {
-    fetchApplications();
-  }, [assessmentType]);
-
-  const fetchApplications = async () => {
+  const fetchApplications = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(
@@ -24,7 +20,11 @@ const CreditAssessment = ({ assessmentType, onBack }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [assessmentType]); // ✅ include assessmentType dependency
+
+  useEffect(() => {
+    fetchApplications();
+  }, [fetchApplications]); // ✅ include fetchApplications in dependencies
 
   const handleAssessApplication = (application) => {
     setSelectedApplication(application);
@@ -38,16 +38,11 @@ const CreditAssessment = ({ assessmentType, onBack }) => {
 
   const getAssessmentTitle = () => {
     switch (assessmentType) {
-      case 'personal':
-        return 'Personal Loan Credit Assessment';
-      case 'business':
-        return 'Business Loan Credit Assessment';
-      case 'salary':
-        return 'Salary Loan Credit Assessment';
-      case 'all':
-        return 'All Loan Credit Assessments';
-      default:
-        return 'Credit Assessment';
+      case 'personal': return 'Personal Loan Credit Assessment';
+      case 'business': return 'Business Loan Credit Assessment';
+      case 'salary': return 'Salary Loan Credit Assessment';
+      case 'all': return 'All Loan Credit Assessments';
+      default: return 'Credit Assessment';
     }
   };
 

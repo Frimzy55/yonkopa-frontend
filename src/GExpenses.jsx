@@ -1,6 +1,6 @@
 
 //import React, { useState } from "react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useCallback, } from "react";
 
 
 const Expenses = ({
@@ -56,24 +56,25 @@ const Expenses = ({
   // const [surplusInterpretation, setSurplusInterpretation] = useState(""); // New state
 
 
-    const calculateLoanDetails = () => {
-        const p = parseFloat(principal) || 0;
-        const r = parseFloat(rate) / 100 || 0; // Convert rate to decimal
-        const t = parseFloat(loanTerm) || 0;
-    
-        const calculatedInterest = p * r * t;
-        const calculatedLoanAmount = p + calculatedInterest;
-        const calculatedMonthlyInstallment = t > 0 ? calculatedLoanAmount / (t ) : 0;
-    
-        setInterest(calculatedInterest.toFixed(2));
-        setLoanAmount(calculatedLoanAmount.toFixed(2));
-        setMonthlyInstallment(calculatedMonthlyInstallment.toFixed(2));
-      };
 
-      useEffect(() => {
-        calculateLoanDetails();
-      }, [principal, rate, loanTerm]); // Dependencies: Recalculate when these change
-    
+
+const calculateLoanDetails = useCallback(() => {
+  const p = parseFloat(principal) || 0;
+  const r = parseFloat(rate) / 100 || 0;
+  const t = parseFloat(loanTerm) || 0;
+
+  const calculatedInterest = p * r * t;
+  const calculatedLoanAmount = p + calculatedInterest;
+  const calculatedMonthlyInstallment = t > 0 ? calculatedLoanAmount / t : 0;
+
+  setInterest(calculatedInterest.toFixed(2));
+  setLoanAmount(calculatedLoanAmount.toFixed(2));
+  setMonthlyInstallment(calculatedMonthlyInstallment.toFixed(2));
+}, [principal, rate, loanTerm, setInterest, setLoanAmount, setMonthlyInstallment]);
+
+useEffect(() => {
+  calculateLoanDetails();
+}, [calculateLoanDetails]); // ESLint happy
 
      
 

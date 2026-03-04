@@ -86,8 +86,8 @@ const CustomerCompleteKyc = ({ user }) => {
     }
 
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/kyc/submit`, {
-         //const res = await fetch('http://localhost:5000/api/kyc/submit/,' ,{
+      //const res = await fetch(`${process.env.REACT_APP_API_URL}/api/kyc/submit`, {
+         const res = await fetch("https://yonkopa-backend-production-b4f7.up.railway.app/api/kyc/submit", {
         method: "POST",
         body: formToSend,
       });

@@ -75,7 +75,8 @@ const LoginPage = ({ onClose }) => {
     }
 
     try {
-      const response = await axios.post("https://yonkopa-backend-production-b4f7.up.railway.app/login", formData);
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/login`, formData);
+
       const { token, user } = response.data;
 
       localStorage.setItem("token", token);

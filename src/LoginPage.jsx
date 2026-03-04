@@ -75,7 +75,7 @@ const LoginPage = ({ onClose }) => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/login", formData);
+      const response = await axios.post("https://yonkopa-backend-production-b4f7.up.railway.app/login", formData);
       const { token, user } = response.data;
 
       localStorage.setItem("token", token);

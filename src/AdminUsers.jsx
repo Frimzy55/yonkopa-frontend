@@ -13,7 +13,8 @@ const AdminUsers = () => {
   });
   const [searchTerm, setSearchTerm] = useState("");
 
-  const apiUrl = "http://localhost:5000/userss";
+ // const apiUrl = "http://localhost:5000/userss";
+  const apiUrl = `${process.env.REACT_APP_API_URL}/userss`;
 
   // Fetch users from backend, optionally with search
   const fetchUsers = async (search = "") => {

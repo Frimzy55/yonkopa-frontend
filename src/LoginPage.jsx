@@ -82,7 +82,7 @@ const LoginPage = ({ onClose }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      alert("Login successful!");
+      //alert("Login successful!");
 
       if (user.role === "admin") navigate("/admin-dashboard");
       else if (user.role === "loan_officer") navigate("/loan-officer-dashboard");

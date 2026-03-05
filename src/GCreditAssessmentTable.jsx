@@ -25,8 +25,10 @@ const CreditAssessmentWizard = () => {
   const fetchApplications = async () => {
     try {
       const response = await fetch(
-        'http://localhost:5000/api/loan-applications/pending'
+        `${process.env.REACT_APP_API_URL}/api/loan-applications/pending`
       );
+
+       //const res = await fetch(`${process.env.REACT_APP_API_URL}/api/loan-applications/pending`, {
       if (!response.ok) throw new Error('Failed to fetch');
 
       const data = await response.json();

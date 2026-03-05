@@ -4,6 +4,8 @@ import './CustomerCompleteKyc.css'; // CSS for form + progress bar
 
 const CustomerCompleteKyc = ({ user }) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+
 
   // Autofill names and email from user
   const [formData, setFormData] = useState({
@@ -79,6 +81,7 @@ const CustomerCompleteKyc = ({ user }) => {
 
   const handleSubmit = async (e) => {
   e.preventDefault();
+  setSubmitting(true); // show loading state
 
   const formToSend = new FormData();
   for (const key in formData) {
@@ -98,12 +101,15 @@ const CustomerCompleteKyc = ({ user }) => {
 
     if (res.ok) {
       alert("KYC submitted successfully!");
+      setCurrentStep(1); // optionally reset form
     } else {
       alert(`Error submitting KYC: ${data.message || 'Unknown error'}`);
     }
   } catch (error) {
     console.error("Submit error:", error);
     alert("Network or server error. Check console.");
+  } finally {
+    setSubmitting(false);
   }
 };
   const renderStep = () => {
@@ -233,7 +239,9 @@ const CustomerCompleteKyc = ({ user }) => {
         <div className="form-navigation">
           {currentStep > 1 && <button type="button" onClick={prevStep} className="nav-btn prev-btn">Previous</button>}
           {currentStep < steps.length ? <button type="button" onClick={nextStep} className="nav-btn next-btn">Next</button>
-            : <button type="submit" className="nav-btn submit-btn">Submit for Verification</button>}
+            :<button type="submit" className="nav-btn submit-btn" disabled={submitting}>
+  {submitting ? "Submitting..." : "Submit for Verification"}
+</button>}
         </div>
       </form>
     </div>

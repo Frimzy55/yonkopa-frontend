@@ -15,7 +15,8 @@ const ApplicantProfile = ({ application, onBack, onNext }) => {
         .replace('T', ' '); // 'YYYY-MM-DD HH:MM:SS'
 
       // Call backend API to save applicant profile
-      const response = await fetch('http://localhost:5000/api/applications/save-profile', {
+      //const response = await fetch('http://localhost:5000/api/applications/save-profile', {
+         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/applications/save-profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,45 +1,71 @@
-import React, { useState } from "react";
+import { useState, useEffect } from 'react';
 
-const GComments = ({ application, onBack, onSubmit }) => {
-  const [comment, setComment] = useState("");
+const GComments = ({ application, formData, setFormData, onBack, onSubmit }) => {
+  const initialComments = formData.comments || {};
 
-  const handleSubmit = () => {
-    if (!comment.trim()) {
-      alert("Please enter a comment before submitting.");
-      return;
-    }
+  const [internalComment, setInternalComment] = useState(initialComments.internalComment || '');
+  const [externalComment, setExternalComment] = useState(initialComments.externalComment || '');
+  const [decision, setDecision] = useState(initialComments.decision || '');
 
-    console.log("Submitting comment:", comment);
-    console.log("Application ID:", application.id);
-
-    // You can later connect this to backend API
-    onSubmit();
-  };
+  // Sync local state to main formData
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      comments: {
+        internalComment,
+        externalComment,
+        decision
+      }
+    }));
+  }, [internalComment, externalComment, decision, setFormData]);
 
   return (
-    <div className="card shadow-sm">
-      <div className="card-body">
-        <h5 className="mb-3">Assessment Comments</h5>
+    <div className="p-4 border rounded shadow">
+      <div className="d-flex justify-content-between mb-3">
+        <button className="btn btn-secondary" onClick={onBack}>
+          ← Back
+        </button>
+        <button className="btn btn-success" onClick={onSubmit}>
+          Submit All Steps
+        </button>
+      </div>
 
+      <h4>Comments & Decision</h4>
+      <p>Comments for <strong>{application.applicantName}</strong></p>
+
+      <div className="mt-3">
         <div className="mb-3">
-          <label className="form-label">Write Comment</label>
+          <label className="form-label">Internal Comment</label>
           <textarea
             className="form-control"
-            rows="5"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Enter assessment notes here..."
+            rows={3}
+            value={internalComment}
+            onChange={(e) => setInternalComment(e.target.value)}
           />
         </div>
 
-        <div className="d-flex justify-content-between">
-          <button className="btn btn-secondary" onClick={onBack}>
-            Back
-          </button>
+        <div className="mb-3">
+          <label className="form-label">External Comment</label>
+          <textarea
+            className="form-control"
+            rows={3}
+            value={externalComment}
+            onChange={(e) => setExternalComment(e.target.value)}
+          />
+        </div>
 
-          <button className="btn btn-success" onClick={handleSubmit}>
-            Submit Assessment
-          </button>
+        <div className="mb-3">
+          <label className="form-label">Decision</label>
+          <select
+            className="form-select"
+            value={decision}
+            onChange={(e) => setDecision(e.target.value)}
+          >
+            <option value="">-- Select Decision --</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="pending">Pending</option>
+          </select>
         </div>
       </div>
     </div>

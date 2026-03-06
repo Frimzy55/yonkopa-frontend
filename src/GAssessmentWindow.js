@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { calculateLoanDetails } from './utils/loanCalculations'; // <- import here
+import { calculateLoanDetails } from './loanCalculations'; // <- import here
 
 const AssessmentWindow = ({ application, formData, setFormData, onBack, onNext }) => {
   const initialCreditData = formData.borrowerCredit || {};

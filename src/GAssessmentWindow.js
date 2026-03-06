@@ -43,8 +43,8 @@ const AssessmentWindow = ({ application, formData, setFormData, onBack, onNext }
   const [otherIncome, setOtherIncome] = useState(initialCreditData.otherIncome || 0);
   const [householdSurplus, setHouseholdSurplus] = useState(initialCreditData.householdSurplus || 0);
   const [loanRecommendation, setLoanRecommendation] = useState(initialCreditData.loanRecommendation || 0);
-  const [expectedMonthlyInstallment, setExpectedMonthlyInstallment] = useState(initialCreditData.expectedMonthlyInstallment || 0);
-  const [allowableDisposableLoanService, setAllowableDisposableLoanService] = useState(initialCreditData.allowableDisposableLoanService || 0);
+  const [expectedMonthlyInstallment, ] = useState(initialCreditData.expectedMonthlyInstallment || 0);
+  const [allowableDisposableLoanService, ] = useState(initialCreditData.allowableDisposableLoanService || 0);
 
 
 
@@ -454,28 +454,31 @@ useEffect(() => {
       onChange={(e) => setLoanRecommendation(e.target.value)}
     />
   </div>
+    <div className="col-12 my-4">
+  <hr />
+</div>
 
-  <div className="col-md-4">
-    <label className="form-label">Expected Monthly Installment</label>
+ <div className="row g-3 mt-3">
+  <div className="col-md-6">
+    <label className="form-label">Expected Monthly Installment (GH¢)</label>
     <input
       type="number"
       className="form-control"
-      //value={expectedMonthlyInstallment}
-      value={monthlyInstallment}
-      onChange={(e) => setExpectedMonthlyInstallment(e.target.value)}
+      value={monthlyInstallment}  // display calculated value
+      readOnly
     />
   </div>
 
-  <div className="col-md-4">
+  <div className="col-md-6">
     <label className="form-label">Allowable Disposable Loan Service (GH¢)</label>
     <input
       type="number"
       className="form-control"
-     // value={allowableDisposableLoanService}
-     value={loanRecommendation}
-      onChange={(e) => setAllowableDisposableLoanService(e.target.value)}
+      value={loanRecommendation}  // display calculated value
+      readOnly
     />
   </div>
+</div>
 </div>
 
            {/* Generate Pay Capacity Button – LAST */}

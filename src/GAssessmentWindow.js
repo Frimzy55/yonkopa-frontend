@@ -286,71 +286,75 @@ useEffect(() => {
   <hr />
 </div>
 
-          <div className="col-md-6">
-            <h5 className="mt-4">principal-rate calculation</h5>
-            <label className="form-label">Principal (GH¢)</label>
-            <input
-              type="number"
-              className="form-control"
-              value={principal}
-              onChange={(e) => setPrincipal(e.target.value)}
-            />
-          </div>
+          <h5 className="mt-4">Principal & Rate Calculation</h5>
 
-          <div className="col-md-4">
-            <label className="form-label">Rate (%)</label>
-            <input
-              type="number"
-              className="form-control"
-              value={rate}
-              onChange={(e) => setRate(e.target.value)}
-            />
-          </div>
+<div className="row g-3">
+  <div className="col-md-3">
+    <label className="form-label">Principal (GH¢)</label>
+    <input
+      type="number"
+      className="form-control"
+      value={principal}
+      onChange={(e) => setPrincipal(e.target.value)}
+    />
+  </div>
 
-          <div className="col-md-4">
-            <label className="form-label">Loan Term (Month)</label>
-            <input
-              type="number"
-              className="form-control"
-              value={loanTerm}
-              onChange={(e) => setLoanTerm(e.target.value)}
-            />
-          </div>
+  <div className="col-md-3">
+    <label className="form-label">Rate (%)</label>
+    <input
+      type="number"
+      className="form-control"
+      value={rate}
+      onChange={(e) => setRate(e.target.value)}
+    />
+  </div>
 
-          <div className="col-md-4">
-            <label className="form-label">Interest (GH¢)</label>
-            <input
-              type="number"
-              className="form-control"
-              value={interest}
-              onChange={(e) => setInterest(e.target.value)}
-            />
-          </div>
+  <div className="col-md-3">
+    <label className="form-label">Loan Term (Month)</label>
+    <input
+      type="number"
+      className="form-control"
+      value={loanTerm}
+      onChange={(e) => setLoanTerm(e.target.value)}
+    />
+  </div>
 
-          <div className="col-md-4">
-            <label className="form-label">Loan Amount (GH¢)</label>
-            <input
-              type="number"
-              className="form-control"
-              value={loanAmount}
-              onChange={(e) => setLoanAmount(e.target.value)}
-            />
-          </div>
+  <div className="col-md-3">
+    <label className="form-label">Interest (GH¢)</label>
+    <input
+      type="number"
+      className="form-control"
+      value={interest}
+      onChange={(e) => setInterest(e.target.value)}
+    />
+  </div>
 
-          <div className="col-md-4">
-            <label className="form-label">Monthly Installment (GH¢)</label>
-            <input
-              type="number"
-              className="form-control"
-              value={monthlyInstallment}
-              onChange={(e) => setMonthlyInstallment(e.target.value)}
-            />
-          </div>
+  <div className="col-md-3">
+    <label className="form-label">Loan Amount (GH¢)</label>
+    <input
+      type="number"
+      className="form-control"
+      value={loanAmount}
+      onChange={(e) => setLoanAmount(e.target.value)}
+    />
+  </div>
+
+  <div className="col-md-3">
+    <label className="form-label">Monthly Installment (GH¢)</label>
+    <input
+      type="number"
+      className="form-control"
+      value={monthlyInstallment}
+      onChange={(e) => setMonthlyInstallment(e.target.value)}
+    />
+  </div>
+</div>
           <div className="col-12 my-4">
   <hr />
 </div>
 
           <div className="col-md-4">
+            <h5 className="mt-4">business financial section</h5>
             <label className="form-label">Gross Margin Percentage (%)</label>
             <input
               type="number"

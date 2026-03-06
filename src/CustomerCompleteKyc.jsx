@@ -55,7 +55,8 @@ const CustomerCompleteKyc = ({ user }) => {
     firstName: nameParts[0] || '',
     middleName: nameParts.length === 3 ? nameParts[1] : '',
     lastName: nameParts.length >= 2 ? nameParts[nameParts.length - 1] : '',
-    email: user.email || ''
+    email: user.email || '',
+    mobileNumber: user.mobileNumber || ''
   }));
 }, [user]);
 
@@ -194,7 +195,7 @@ const handleInputChange = (e) => {
         <div className="form-step">
           <h3>Contact Information</h3>
           <div className="form-grid">
-            <input type="tel" name="mobileNumber" value={formData.mobileNumber} onChange={handleInputChange} placeholder="Mobile Number *" required />
+            <input type="tel" name="mobileNumber" value={formData.mobileNumber} readOnly placeholder="Mobile Number *" required />
             <input type="email" name="email" value={formData.email} readOnly placeholder="Email Address *" required />
             <input type="text" name="residentialAddress" value={formData.residentialAddress} onChange={handleInputChange} placeholder="Residential Address *" required />
             <input type="text" name="city" value={formData.city} onChange={handleInputChange} placeholder="City *" required />

@@ -504,19 +504,20 @@ useEffect(() => {
       <strong>Pay Capacity Surplus (GH¢): </strong>&nbsp; {payCapacity.toFixed(2)}
 
 
-      {/* Conditional Message */}
-      {payCapacity < 0 ? (
-        <span className="text-danger mt-2">
-          Applicant's disposable income to service the loan is less than the system's benchmark.
-          Based on the data submitted, the applicant may not be able to service the loan.
-        </span>
-      ) : (
-        <span className="text-success mt-2">
-          Applicant's disposable income is sufficient to service the loan.
-        </span>
-      )}
+     
     </div>
   )}
+
+  {payCapacity < 0 ? (
+        <div className="text-danger mt-2">
+          Applicant's disposable income to service the loan is less than the system's benchmark. <br />
+          Based on the data submitted, the applicant may not be able to service the loan.
+        </div>
+      ) : (
+        <div className="text-success mt-2">
+          Applicant's disposable income is sufficient to service the loan.
+        </div>
+      )}
 </div>
 
 

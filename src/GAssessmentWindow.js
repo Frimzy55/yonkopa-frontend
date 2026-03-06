@@ -5,6 +5,10 @@ const AssessmentWindow = ({ application, formData, setFormData, onBack, onNext }
 
   const [isCreditworthy, setIsCreditworthy] = useState(initialCreditData.isCreditworthy || false);
   const [businessOverview, setBusinessOverview] = useState(initialCreditData.businessOverview || '');
+  const [businessLocation, setBusinessLocation] = useState(initialCreditData.businessLocation || '');
+  const [businessStartDate, setBusinessStartDate] = useState(initialCreditData.businessStartDate || '');
+  const [nearestLandmark, setNearestLandmark] = useState(initialCreditData.nearestLandmark || '');
+  const [businessDescription, setBusinessDescription] = useState(initialCreditData.businessDescription || '');
 
   // Sync local state to main formData
   useEffect(() => {
@@ -12,10 +16,14 @@ const AssessmentWindow = ({ application, formData, setFormData, onBack, onNext }
       ...prev,
       borrowerCredit: {
         isCreditworthy,
-        businessOverview
+        businessOverview,
+        businessLocation,
+        businessStartDate,
+        nearestLandmark,
+        businessDescription
       }
     }));
-  }, [isCreditworthy, businessOverview, setFormData]);
+  }, [isCreditworthy, businessOverview, businessLocation, businessStartDate, nearestLandmark, businessDescription, setFormData]);
 
   return (
     <div className="p-4 border rounded shadow">
@@ -74,6 +82,53 @@ const AssessmentWindow = ({ application, formData, setFormData, onBack, onNext }
             <option value="Retailer">Retailer</option>
             <option value="Others">Others</option>
           </select>
+        </div>
+
+        {/* Business Location & Details */}
+        <h5 className="mt-4">Business Location & Details</h5>
+        <div className="row g-3">
+          <div className="col-md-6">
+            <label className="form-label">Business Location</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter business location"
+              value={businessLocation}
+              onChange={(e) => setBusinessLocation(e.target.value)}
+            />
+          </div>
+
+          <div className="col-md-6">
+            <label className="form-label">Business Start Date</label>
+            <input
+              type="date"
+              className="form-control"
+              value={businessStartDate}
+              onChange={(e) => setBusinessStartDate(e.target.value)}
+            />
+          </div>
+
+          <div className="col-md-6">
+            <label className="form-label">Nearest Landmark</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter nearest landmark"
+              value={nearestLandmark}
+              onChange={(e) => setNearestLandmark(e.target.value)}
+            />
+          </div>
+
+          <div className="col-12">
+            <label className="form-label">Business Description</label>
+            <textarea
+              className="form-control"
+              rows={3}
+              placeholder="Enter business description"
+              value={businessDescription}
+              onChange={(e) => setBusinessDescription(e.target.value)}
+            />
+          </div>
         </div>
       </div>
     </div>

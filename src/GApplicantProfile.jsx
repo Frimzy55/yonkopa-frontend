@@ -13,45 +13,60 @@ const STEPS = [
 const ApplicantProfile = ({ application, onBack }) => {
   const [currentStep, setCurrentStep] = useState(0);
 
+  // ✅ Collect data from all steps here
+  const [formData, setFormData] = useState({
+    applicantProfile: {
+      loanId: application?.id || "",
+      customerId: application?.customerId || "",
+      applicantName: application?.applicantName || "",
+      contactNumber: application?.contactNumber || "",
+      creditOfficer: application?.creditOfficer || "",
+      loanType: application?.loanType || "",
+      loanAmount: application?.loanAmount || "",
+      applicationDate: application?.applicationDate || "",
+    },
+    collateralDetails: {},
+    borrowerCredit: {},
+    comments: {},
+  });
+
   if (!application) return null;
 
-  const nextStep = () => setCurrentStep((prev) => prev + 1);
-  const prevStep = () => setCurrentStep((prev) => prev - 1);
+  const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, STEPS.length - 1));
+  const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
 
-  const handleNext = async () => {
+  // ✅ Submit all steps at once
+  const handleSubmitAll = async () => {
     try {
-      const formattedDate = new Date(application.applicationDate)
+      const formattedDate = new Date(formData.applicantProfile.applicationDate)
         .toISOString()
         .slice(0, 19)
         .replace("T", " ");
 
+      const payload = {
+        ...formData.applicantProfile,
+        applicationDate: formattedDate,
+        ...formData.collateralDetails,
+        ...formData.borrowerCredit,
+        ...formData.comments,
+      };
+
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/applications/save-profile`,
+        `${process.env.REACT_APP_API_URL}/api/applications/submit-all`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            loanId: application.id,
-            customerId: application.customerId,
-            applicantName: application.applicantName,
-            contactNumber: application.contactNumber,
-            creditOfficer: application.creditOfficer,
-            loanType: application.loanType,
-            loanAmount: application.loanAmount,
-            applicationDate: formattedDate,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
         }
       );
 
       const data = await response.json();
 
       if (response.ok) {
-        console.log("Profile saved:", data);
-        nextStep();
+        alert("All steps submitted successfully!");
+        onBack(); // go back to table
       } else {
-        alert("Error saving profile: " + data.message);
+        alert("Error submitting: " + data.message);
       }
     } catch (error) {
       console.error(error);
@@ -61,26 +76,17 @@ const ApplicantProfile = ({ application, onBack }) => {
 
   return (
     <div className="container mt-4">
-
-      {/* ===== WIZARD HEADER ===== */}
       <div className="bg-white py-2">
         <h4>Credit Assessment</h4>
-
         <div className="d-flex justify-content-between align-items-center mb-2">
-          <strong>
-            Step {currentStep + 1} of {STEPS.length}
-          </strong>
+          <strong>Step {currentStep + 1} of {STEPS.length}</strong>
           <span>{STEPS[currentStep]}</span>
         </div>
 
         <ul className="nav nav-pills justify-content-between mb-3">
           {STEPS.map((step, index) => (
             <li className="nav-item flex-fill text-center" key={index}>
-              <span
-                className={`nav-link ${
-                  index === currentStep ? "active" : "disabled"
-                }`}
-              >
+              <span className={`nav-link ${index === currentStep ? "active" : "disabled"}`}>
                 {step}
               </span>
             </li>
@@ -90,87 +96,93 @@ const ApplicantProfile = ({ application, onBack }) => {
         <hr />
       </div>
 
-      {/* ===== STEP 1: PROFILE ===== */}
+      {/* ===== STEP CONTENT ===== */}
       {currentStep === 0 && (
         <div className="p-4 border rounded shadow-sm">
-
           <button className="btn btn-secondary mb-3 me-2" onClick={onBack}>
             ← Back to Table
           </button>
-
-          <button className="btn btn-primary mb-3" onClick={handleNext}>
-            Next →
+          <button className="btn btn-primary mb-3" onClick={nextStep}>
+            Next → 
           </button>
 
           <h5>Applicant Profile</h5>
-
           <table className="table table-bordered mt-3">
             <tbody>
               <tr>
                 <th>Loan ID</th>
-                <td>#{application.id}</td>
+                <td>#{formData.applicantProfile.loanId}</td>
               </tr>
               <tr>
                 <th>Customer ID</th>
-                <td>{application.customerId}</td>
+                <td>{formData.applicantProfile.customerId}</td>
               </tr>
               <tr>
                 <th>Name</th>
-                <td>{application.applicantName}</td>
+                <td>{formData.applicantProfile.applicantName}</td>
               </tr>
               <tr>
                 <th>Contact Number</th>
-                <td>{application.contactNumber}</td>
+                <td>{formData.applicantProfile.contactNumber}</td>
               </tr>
               <tr>
                 <th>Credit Officer</th>
-                <td>{application.creditOfficer}</td>
+                <td>{formData.applicantProfile.creditOfficer}</td>
               </tr>
               <tr>
                 <th>Loan Type</th>
-                <td>{application.loanType}</td>
+                <td>{formData.applicantProfile.loanType}</td>
               </tr>
               <tr>
                 <th>Loan Amount</th>
-                <td>₵{Number(application.loanAmount).toLocaleString()}</td>
+                <td>₵{Number(formData.applicantProfile.loanAmount).toLocaleString()}</td>
               </tr>
               <tr>
                 <th>Application Date</th>
-                <td>{application.applicationDate}</td>
+                <td>{formData.applicantProfile.applicationDate}</td>
               </tr>
             </tbody>
           </table>
         </div>
       )}
 
-      {/* ===== STEP 2 ===== */}
       {currentStep === 1 && (
         <CollateralDetailsWindow
           application={application}
+          formData={formData}
+          setFormData={setFormData}
           onBack={prevStep}
           onNext={nextStep}
         />
       )}
 
-      {/* ===== STEP 3 ===== */}
       {currentStep === 2 && (
         <AssessmentWindow
           application={application}
+          formData={formData}
+          setFormData={setFormData}
           onBack={prevStep}
           onNext={nextStep}
         />
       )}
 
-      {/* ===== STEP 4 ===== */}
       {currentStep === 3 && (
         <GComments
           application={application}
+          formData={formData}
+          setFormData={setFormData}
           onBack={prevStep}
-          onSubmit={() => {
-            alert("Assessment submitted successfully!");
-            onBack(); // return to table
-          }}
+          onSubmit={handleSubmitAll} // ✅ submit all
         />
+      )}
+
+      {/* Optional: global "Submit All" button visible on last step */}
+      {currentStep === 3 && (
+        <div className="mt-3">
+          <button className="btn btn-success" onClick={handleSubmitAll}>
+            Submit All Steps
+          </button>
+        </div>
       )}
     </div>
   );

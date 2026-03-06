@@ -485,13 +485,14 @@ useEffect(() => {
 </div>
 
            {/* Generate Pay Capacity Button – LAST */}
-    {/* Generate Pay Capacity Section */}
+ {/* Generate Pay Capacity Section */}
 <div className="row g-3 mt-3">
   <div className="col-md-6">
     <button
       className="btn btn-success w-100"
       onClick={() => {
-        const surplus = (parseFloat( loanRecommendation) || 0) - (parseFloat(monthlyInstallment) || 0);
+        // Calculate pay capacity: loan recommendation minus monthly installment
+        const surplus = (parseFloat(loanRecommendation) || 0) - (parseFloat(monthlyInstallment) || 0);
         setPayCapacity(surplus);
       }}
     >
@@ -499,25 +500,18 @@ useEffect(() => {
     </button>
   </div>
 
+  {/* Show Pay Capacity and Message only after button click */}
   {payCapacity !== null && (
-    <div className="col-md-6 d-flex align-items-center">
-      <strong>Pay Capacity Surplus (GH¢): </strong>&nbsp; {payCapacity.toFixed(2)}
+    <div className="col-12 mt-3">
+      <strong>Pay Capacity Surplus (GH¢): </strong> {payCapacity.toFixed(2)}
 
-
-     
+      <div className={payCapacity < 0 ? "text-danger mt-2" : "text-success mt-2"}>
+        {payCapacity < 0
+          ? "Applicant's disposable income to service the loan is less than the system's benchmark. Based on the data submitted, the applicant may not be able to service the loan."
+          : "Applicant's disposable income is sufficient to service the loan."}
+      </div>
     </div>
   )}
-
-  {payCapacity < 0 ? (
-        <div className="text-danger mt-2">
-          Applicant's disposable income to service the loan is less than the system's benchmark. <br />
-          Based on the data submitted, the applicant may not be able to service the loan.
-        </div>
-      ) : (
-        <div className="text-success mt-2">
-          Applicant's disposable income is sufficient to service the loan.
-        </div>
-      )}
 </div>
 
 

@@ -16,3 +16,24 @@ export const calculateLoanDetails = ({ principal, rate, loanTerm }) => {
     monthlyInstallment: parseFloat(monthlyInstallment.toFixed(2)),
   };
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

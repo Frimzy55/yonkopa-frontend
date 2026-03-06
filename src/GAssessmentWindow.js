@@ -1,5 +1,14 @@
 import { useState, useEffect } from 'react';
 import { calculateLoanDetails } from './loanCalculations'; // <- import here
+import {
+  calculateCostOfGoodsSold,
+  calculateGrossProfit,
+  calculateTotalOperatingExpenses,
+  calculateNetBusinessProfit,
+  calculateHouseholdSurplus,
+  //calculateLoanDetails
+
+} from './loanCalculation1';
 
 const AssessmentWindow = ({ application, formData, setFormData, onBack, onNext }) => {
   const initialCreditData = formData.borrowerCredit || {};
@@ -47,6 +56,41 @@ const AssessmentWindow = ({ application, formData, setFormData, onBack, onNext }
     setLoanAmount(calcLoan);
     setMonthlyInstallment(calcMonthly);
   }, [principal, rate, loanTerm]);
+
+
+
+
+  // Recalculate Loan Details when principal, rate, or loanTerm changes
+useEffect(() => {
+  const { interest: calcInterest, loanAmount: calcLoan, monthlyInstallment: calcMonthly } =
+    calculateLoanDetails({ principal, rate, loanTerm });
+
+  setInterest(calcInterest);
+  setLoanAmount(calcLoan);
+  setMonthlyInstallment(calcMonthly);
+}, [principal, rate, loanTerm]);
+
+// Recalculate Financials when related fields change
+useEffect(() => {
+  const salesRevenue = parseFloat(monthlySalesRevenue) || 0;
+  const grossMarginPerc = parseFloat(grossMarginPercentage) || 0;
+  const otherIncomeVal = parseFloat(otherIncome) || 0;
+  const householdExpensesVal = parseFloat(householdExpenses) || 0;
+
+  const cogs = calculateCostOfGoodsSold(salesRevenue, grossMarginPerc);
+  const grossProfitVal = calculateGrossProfit(salesRevenue, cogs);
+  const totalExpenses = calculateTotalOperatingExpenses(salesRevenue, cogs, grossProfitVal, grossMarginPerc);
+  const netProfit = calculateNetBusinessProfit(grossProfitVal, totalExpenses);
+  const surplus = calculateHouseholdSurplus(netProfit, otherIncomeVal, householdExpensesVal);
+  const loanRec = surplus * 0.6;
+
+  setCostOfGoodsSold(cogs);
+  setGrossProfit(grossProfitVal);
+  setTotalOperatingExpenses(totalExpenses);
+  setNetBusinessProfit(netProfit);
+  setHouseholdSurplus(surplus);
+  setLoanRecommendation(loanRec);
+}, [monthlySalesRevenue, grossMarginPercentage, otherIncome, householdExpenses]);
 
   // Sync all form data
   useEffect(() => {

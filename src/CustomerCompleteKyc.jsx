@@ -56,7 +56,7 @@ const CustomerCompleteKyc = ({ user }) => {
     middleName: nameParts.length === 3 ? nameParts[1] : '',
     lastName: nameParts.length >= 2 ? nameParts[nameParts.length - 1] : '',
     email: user.email || '',
-    mobileNumber: user.mobileNumber || ''
+    mobileNumber: user.phone || ''
   }));
 }, [user]);
 

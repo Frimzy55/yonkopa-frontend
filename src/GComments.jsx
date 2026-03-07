@@ -25,9 +25,7 @@ const GComments = ({ application, formData, setFormData, onBack, onSubmit }) => 
         <button className="btn btn-secondary" onClick={onBack}>
           ← Back
         </button>
-        <button className="btn btn-success" onClick={onSubmit}>
-          Submit All Steps
-        </button>
+        
       </div>
 
       <h4>Comments & Decision</h4>
